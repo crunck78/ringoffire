@@ -9,15 +9,15 @@
          font-size: 32px;
          margin-left: 16px;
     }
-    background-color: rgb(182, 179, 174);
+    background-color: rgba(50, 50, 50, 0.8);
     img{
         width: 70px;
         height: 70px;
         object-fit: cover;
         border-radius: 100%;
     }
+}
 
-    .player-active{
-        background-color:orange !important;
-    }
+.player-active{
+    background-color:orange !important;
 }
