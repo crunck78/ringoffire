@@ -1,7 +1,7 @@
 <app-player *ngFor="let player of game.players; let i = index;" class="player-position"
     [ngStyle]="{'top.px': 100 + (i * 90)}" [name]="player" [playerActive]="i == game.currentPlayer"></app-player>
 
-<div class="filed">
+<div class="field">
     <div class="card-stack">
         <!-- Card Stack -->
         <img [ngStyle]="{'right.px': i * 5}" *ngFor="let c of [0, 1, 2, 3]; let i = index;"
