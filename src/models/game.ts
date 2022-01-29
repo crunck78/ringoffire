@@ -4,7 +4,7 @@ export class Game{
     public playedCards: string[] = [];
     public currentPlayer: number = 0;
     public pickCardAnimation: boolean = false;
-    public currentCard: string = '';
+    public currentCard: string | undefined = '';
 
     constructor(){
         for(let i = 1; i < 14; i++){
@@ -29,7 +29,7 @@ export class Game{
     }
 }
 
-function shuffle(array) {
+function shuffle(array : any) {
     var currentIndex = array.length, temporaryValue, randomIndex;
   
     // While there remain elements to shuffle...

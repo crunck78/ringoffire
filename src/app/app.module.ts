@@ -17,6 +17,7 @@ import { GameInfoComponent } from './game-info/game-info.component';
 import {MatCardModule} from '@angular/material/card';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { environment } from '../environments/environment';
   ],
   imports: [
     MatCardModule,
+    MatSnackBarModule,
     BrowserModule,
     FormsModule,
     AppRoutingModule,

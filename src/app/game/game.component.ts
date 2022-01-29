@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-game',
@@ -13,28 +15,31 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class GameComponent implements OnInit {
   game: Game;
   gameID: string;
-  
-  constructor(private route: ActivatedRoute, private firestore: AngularFirestore, public dialog: MatDialog) { }
+  animal : any;
+  constructor(private route: ActivatedRoute, private firestore: AngularFirestore, public dialog: MatDialog, private _snackBar: MatSnackBar) { 
+   
+  }
 
   ngOnInit(): void {
+    this.animal = "Me";
     this.newGame();
     this.route.params.subscribe((params) => {
       console.log(params.id);
       this.gameID = params.id;
       this
-      .firestore
-      .collection('games')
-      .doc(this.gameID)
-      .valueChanges()
-      .subscribe((game: any) => {
-        console.log('Game Update ', game);
-        this.game.currentPlayer = game.currentPlayer;
-        this.game.stack = game.stack;
-        this.game.playedCards = game.playedCards;
-        this.game.players = game.players;
-        this.game.pickCardAnimation = game.pickCardAnimation;
-        this.game.currentCard = game.currentCard;
-      });
+        .firestore
+        .collection('games')
+        .doc(this.gameID)
+        .valueChanges()
+        .subscribe((game: any) => {
+          console.log('Game Update ', game);
+          this.game.currentPlayer = game.currentPlayer;
+          this.game.stack = game.stack;
+          this.game.playedCards = game.playedCards;
+          this.game.players = game.players;
+          this.game.pickCardAnimation = game.pickCardAnimation;
+          this.game.currentCard = game.currentCard;
+        });
 
     });
 
@@ -45,7 +50,7 @@ export class GameComponent implements OnInit {
   }
 
   takeCard() {
-    if (!this.game.pickCardAnimation) {
+    if (!this.game.pickCardAnimation && this.game.players.length > 1) {
       this.game.currentCard = this.game.stack.pop();
       console.log(this.game.currentCard);
       this.game.pickCardAnimation = true;
@@ -60,7 +65,15 @@ export class GameComponent implements OnInit {
         this.game.pickCardAnimation = false;
         this.saveGame();
       }, 1000);
+    } else if (this.game.players.length <= 1) {
+      this.openSnackBar();
     }
+  }
+
+  openSnackBar() {
+    this._snackBar.open('First at Min 2 Players', 'Ok', {
+      duration: 3000
+    });
   }
 
   openDialog(): void {
@@ -75,12 +88,12 @@ export class GameComponent implements OnInit {
     });
   }
 
-  saveGame(){
+  saveGame() {
     this
-    .firestore
-    .collection('games')
-    .doc(this.gameID)
-    .update(this.game.toJson());
+      .firestore
+      .collection('games')
+      .doc(this.gameID)
+      .update(this.game.toJson());
   }
 
 }
