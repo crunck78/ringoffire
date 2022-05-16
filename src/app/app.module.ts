@@ -18,6 +18,7 @@ import {MatCardModule} from '@angular/material/card';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatSnackBarModule,
     BrowserModule,
     FormsModule,
+    MatSelectModule,
     AppRoutingModule,
     MatButtonModule,
     MatDialogModule,

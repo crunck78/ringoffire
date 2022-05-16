@@ -3,10 +3,19 @@
   <p>What's your Name?</p>
   <mat-form-field>
     <mat-label>Name</mat-label>
-    <input matInput [(ngModel)]="name">
+    <input matInput [(ngModel)]="newPlayer.name">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Favorite Image</mat-label>
+    <mat-select [(ngModel)]="newPlayer.img" >
+      <mat-option *ngFor="let img of imgs" [value]="img.value">
+       {{img.value}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [disabled]="name.length == 0" [mat-dialog-close]="name" cdkFocusInitial>Ok</button>
+  <button mat-button [disabled]="newPlayer.name.length == 0" [mat-dialog-close]="newPlayer" cdkFocusInitial>Ok</button>
 </div>

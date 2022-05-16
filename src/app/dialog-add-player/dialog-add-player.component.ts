@@ -8,7 +8,16 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 })
 export class DialogAddPlayerComponent implements OnInit {
 
-  name: string = '';
+  newPlayer = {
+    name: '',
+    img: ''
+  };
+
+
+  imgs = [
+    {path: 'assets/img/profile/1.webp', value: 'Male'},
+    {path: 'assets/img/profile/2.png', value : 'Female'}
+  ]
 
   constructor( public dialogRef: MatDialogRef<DialogAddPlayerComponent>) { }
 
