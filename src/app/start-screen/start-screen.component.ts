@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FirestoreService } from 'src/app/services/firestore.service';
+import { NavigationService } from 'src/app/services/navigation.service';
 import { Router } from '@angular/router';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { AngularFireDatabase} from '@angular/fire/database';
 import { Game } from 'src/models/game';
 
 @Component({
@@ -9,38 +9,19 @@ import { Game } from 'src/models/game';
   templateUrl: './start-screen.component.html',
   styleUrls: ['./start-screen.component.scss']
 })
-export class StartScreenComponent implements OnInit {
+export class StartScreenComponent {
 
-  constructor(private firestore: AngularFirestore, private router: Router, private database: AngularFireDatabase) { }
-
-  ngOnInit(): void {
-  }
+  constructor(private navigationService : NavigationService, private firestoreService: FirestoreService) { }
 
   newGame() {
-    //Start game
-    let game = new Game();
-    //let game = {};
-    this.useFireStore(game);
-    //this.useDatabase(game);
+    const newGame = new Game();
+    this.firestoreService.addDocToCollection('games', newGame)
+      .then(gameRef => this.openGame(gameRef.id))
+      .catch(error => console.error("Could not open New Game", error));
   }
 
-  useFireStore(game: Game){
-    this
-      .firestore.
-      collection('games')
-      .add(game.toJson())
-      .then((gameInfo: any) => {
-        console.log(gameInfo);
-        this.router.navigateByUrl('/game/' +gameInfo.id);
-      });
+  openGame(gameId: string) {
+    const gameUrl = '/game/' + gameId;
+    this.navigationService.open(gameUrl);
   }
-
-  useDatabase(game: Game){
-    let key = this
-      .database
-      .list('games/')
-      .push(game.toJson()).key;
-      this.router.navigateByUrl('/game/' + key);
-  }
-
 }

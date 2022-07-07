@@ -29,7 +29,7 @@
               "@firebase/functions",
               "@firebase/performance",
               "@firebase/remote-config"
-          ],
+            ],
             "outputPath": "dist/ringoffire",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -126,7 +126,13 @@
         },
         "deploy": {
           "builder": "@angular/fire:deploy",
-          "options": {}
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "ringoffire:build:production",
+            "firebaseProject": "ring-of-fire-31673",
+            "firebaseHostingSite": "ring-of-fire-31673"
+          }
         }
       }
     }

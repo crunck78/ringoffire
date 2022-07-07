@@ -6,9 +6,16 @@
           "ring-of-fire-789ca"
         ]
       }
+    },
+    "ring-of-fire-31673": {
+      "hosting": {
+        "ringoffire": [
+          "ring-of-fire-31673"
+        ]
+      }
     }
   },
   "projects": {
-    "default": "ring-of-fire-789ca"
+    "default": "ring-of-fire-31673"
   }
 }
