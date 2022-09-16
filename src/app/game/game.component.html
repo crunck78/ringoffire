@@ -1,17 +1,17 @@
 <app-player *ngFor="let player of game.players; let i = index;" class="player-position"
-    [ngStyle]="{'top.px': 100 + (i * 90)}" [name]="player" [playerActive]="i == game.currentPlayer"></app-player>
+    [ngStyle]="{'top.px': 100 + (i * 90)}" [img]="player.img" [name]="player.name" [playerActive]="i == game.currentPlayer"></app-player>
 
 <div class="field">
     <div class="card-stack">
         <!-- Card Stack -->
         <img [ngStyle]="{'right.px': i * 5}" *ngFor="let c of [0, 1, 2, 3]; let i = index;"
             src="assets/img/cards_old/card_cover.png">
-        <img (click)="takeCard()" class="top-card" style="right: 25px;" src="assets/img/cards_old/card_cover.png">
+        <img (click)="handleTakeCard()" class="top-card" style="right: 25px;" src="assets/img/cards_old/card_cover.png">
 
         <!-- Stack for played cards -->
         <img *ngFor="let card of game.playedCards" class="played-card" src="assets/img/cards_old/{{ card }}.png">
         <!-- Current card (Animation) -->
-        <img (click)="takeCard()" *ngIf="game.pickCardAnimation" class="pick-card" style="right: 25px;"
+        <img (click)="handleTakeCard()" *ngIf="game.pickCardAnimation" class="pick-card" style="right: 25px;"
             src="assets/img/cards_old/{{ game.currentCard }}.png">
     </div>
 </div>

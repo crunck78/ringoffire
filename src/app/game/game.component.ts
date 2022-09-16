@@ -1,77 +1,88 @@
-import { Component, OnInit } from '@angular/core';
-import { Game } from 'src/models/game'
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Game, GameInterface } from 'src/models/game'
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Unsubscribe } from '@angular/fire/firestore';
+import { FirestoreService } from '../services/firestore.service';
+import { Player } from 'src/models/player';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit {
-  game: Game;
+export class GameComponent implements OnInit, OnDestroy {
+  readonly MINIMUM_PLAYERS = 2;
+  game: Game = new Game();
   gameID: string;
-  animal : any;
-  constructor(private route: ActivatedRoute, private firestore: AngularFirestore, public dialog: MatDialog, private _snackBar: MatSnackBar) { 
-   
+  unsubscribeGameChanges: Unsubscribe;
+
+  constructor(
+    private firestoreService: FirestoreService,
+    public dialog: MatDialog,
+    private _snackBar: MatSnackBar,
+    private route: ActivatedRoute) { }
+  ngOnDestroy(): void {
+    this.unsubscribeGameChanges();
   }
 
-  ngOnInit(): void {
-    this.animal = "Me";
-    this.newGame();
-    this.route.params.subscribe((params) => {
-      console.log(params.id);
-      this.gameID = params.id;
-      this
-        .firestore
-        .collection('games')
-        .doc(this.gameID)
-        .valueChanges()
-        .subscribe((game: any) => {
-          console.log('Game Update ', game);
-          this.game.currentPlayer = game.currentPlayer;
-          this.game.stack = game.stack;
-          this.game.playedCards = game.playedCards;
-          this.game.players = game.players;
-          this.game.pickCardAnimation = game.pickCardAnimation;
-          this.game.currentCard = game.currentCard;
-        });
-
-    });
-
+  async ngOnInit(): Promise<void> {
+    await this.loadGame();
+    this.subscribeToGameChanges();
   }
 
-  newGame() {
-    this.game = new Game();
+  handleTakeCard() {
+    if (this.canTakeCard())
+      this.takeCard();
+    else if (!this.hasGameMinimumPlayers())
+      this.openSnackBar('First at Min '+this.MINIMUM_PLAYERS+' Players');
   }
 
-  takeCard() {
-    if (!this.game.pickCardAnimation && this.game.players.length > 1) {
-      this.game.currentCard = this.game.stack.pop();
-      console.log(this.game.currentCard);
-      this.game.pickCardAnimation = true;
-      this.game.currentPlayer++;
-      this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
-      this.saveGame();
-
-      console.log('New Card', this.game.currentCard);
-      console.log('Game is', this.game);
-      setTimeout(() => {
-        this.game.playedCards.push(this.game.currentCard);
-        this.game.pickCardAnimation = false;
-        this.saveGame();
-      }, 1000);
-    } else if (this.game.players.length <= 1) {
-      this.openSnackBar();
-    }
+  private hasGameMinimumPlayers(){
+    return this.game.players.length >= this.MINIMUM_PLAYERS;
   }
 
-  openSnackBar() {
-    this._snackBar.open('First at Min 2 Players', 'Ok', {
+  private canTakeCard() {
+    return !this.game.pickCardAnimation &&
+      this.hasGameMinimumPlayers();
+  }
+
+  private takeCard() {
+    this.onCardTake();
+    setTimeout(this.afterCardTake.bind(this), 1000);
+  }
+
+  private onCardTake() {
+    this.game.pickCardAnimation = true;
+    this.updateCurrentTakenCard();
+    this.setNextPlayer();
+    this.saveGame();
+  }
+
+  private updateCurrentTakenCard() {
+    this.game.currentCard = this.game.stack.pop();
+  }
+
+  private setNextPlayer() {
+    this.game.currentPlayer++;
+    this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
+  }
+
+  private afterCardTake() {
+    this.game.pickCardAnimation = false;
+    this.currentTakenCardToPlayedCards();
+    this.saveGame();
+  }
+
+  private currentTakenCardToPlayedCards() {
+    this.game.playedCards.push(this.game.currentCard);
+  }
+
+  openSnackBar(message : string) {
+    this._snackBar.open(message, 'Ok', {
       duration: 3000
     });
   }
@@ -79,21 +90,39 @@ export class GameComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
 
-    dialogRef.afterClosed().subscribe((name: string) => {
-      if (name && name.length > 0) {
-        this.game.players.push(name);
-        console.log('The dialog was closed', name);
+    dialogRef.afterClosed().subscribe((newPlayer?: Player) => {
+      if (newPlayer) {
+        this.game.players.push(newPlayer);
         this.saveGame();
       }
     });
   }
 
   saveGame() {
-    this
-      .firestore
-      .collection('games')
-      .doc(this.gameID)
-      .update(this.game.toJson());
+    this.firestoreService
+      .updateDocToCollection('games', this.gameID, this.game);
+  }
+
+  private async loadGame() {
+    await this.setGameId();
+    await this.setGame();
+  }
+
+  private async setGameId() {
+    const paramMap = await firstValueFrom(this.route.paramMap);
+    this.gameID = paramMap.get('id');
+  }
+
+  private async setGame() {
+    const gameInterface = await this.firestoreService
+      .getDocumentData('games', this.gameID) as GameInterface;
+    this.game = new Game(gameInterface);
+  }
+
+  private subscribeToGameChanges() {
+    this.unsubscribeGameChanges = this.firestoreService.onValueChanges('games', this.gameID, {
+      next: docData => this.game = new Game(docData.data() as GameInterface)
+    });
   }
 
 }

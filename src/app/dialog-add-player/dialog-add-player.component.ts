@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Player } from 'src/models/player';
 
 @Component({
   selector: 'app-dialog-add-player',
@@ -8,17 +9,18 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 })
 export class DialogAddPlayerComponent implements OnInit {
 
-  name: string = '';
+  newPlayer = new Player();
 
-  constructor( public dialogRef: MatDialogRef<DialogAddPlayerComponent>) { }
+  imgs = [
+    { path: 'assets/img/profile/1.webp', value: 'Male' },
+    { path: 'assets/img/profile/2.png', value: 'Female' }
+  ];
 
-  ngOnInit(): void {
+  constructor(public dialogRef: MatDialogRef<DialogAddPlayerComponent>) { }
 
-    
-  }
+  ngOnInit(): void {}
 
-  onNoClick(){
+  onNoClick() {
     this.dialogRef.close();
   }
-
 }

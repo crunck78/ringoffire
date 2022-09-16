@@ -10,14 +10,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogAddPlayerComponent } from './dialog-add-player/dialog-add-player.component';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatInputModule} from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { GameInfoComponent } from './game-info/game-info.component';
-import {MatCardModule} from '@angular/material/card';
-import { AngularFireModule } from '@angular/fire';
+import { MatCardModule } from '@angular/material/card';
 import { environment } from '../environments/environment';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireModule } from '@angular/fire/compat/';
 
 @NgModule({
   declarations: [
@@ -33,13 +38,17 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatSnackBarModule,
     BrowserModule,
     FormsModule,
+    MatSelectModule,
     AppRoutingModule,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
     MatInputModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebase)
+
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()), //Update
+
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -29,7 +29,7 @@
               "@firebase/functions",
               "@firebase/performance",
               "@firebase/remote-config"
-          ],
+            ],
             "outputPath": "dist/ringoffire",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -58,7 +58,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": true,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -113,19 +112,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -140,12 +126,17 @@
         },
         "deploy": {
           "builder": "@angular/fire:deploy",
-          "options": {}
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "ringoffire:build:production",
+            "firebaseProject": "ring-of-fire-31673",
+            "firebaseHostingSite": "ring-of-fire-31673"
+          }
         }
       }
     }
   },
-  "defaultProject": "ringoffire",
   "cli": {
     "analytics": "3795e5ae-dc64-4d6b-9eae-f9ae99b3ed56"
   }
