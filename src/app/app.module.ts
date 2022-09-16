@@ -47,7 +47,7 @@ import { AngularFireModule } from '@angular/fire/compat/';
     BrowserAnimationsModule,
 
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()), //
+    provideFirestore(() => getFirestore()), //Update
 
   ],
   providers: [],
